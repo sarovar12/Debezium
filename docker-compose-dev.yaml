@@ -1,0 +1,41 @@
+﻿services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: customers_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 10
+      start_period: 5s
+
+  dotnet-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dotnet-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_URLS: "http://+:8080;http://+:8081"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=customers_db;Username=postgres;Password=postgres"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+
+volumes:
+  pgdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./pgdata
+      o: bind
+
