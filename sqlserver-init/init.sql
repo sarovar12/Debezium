@@ -1,13 +1,5 @@
-CREATE DATABASE IF NOT EXISTS customers_db;
-GO
-
-USE customers_db;
-GO
-
-CREATE TABLE IF NOT EXISTS customers (
-    id GUID PRIMARY KEY,
-    name NVARCHAR(100),
-    email NVARCHAR(100),
-    created_at DATETIME
-    );
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'customers_db')
+BEGIN
+    CREATE DATABASE customers_db;
+END
 GO
