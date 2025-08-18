@@ -24,6 +24,21 @@ services:
       start_period: 5s
     restart: unless-stopped
   
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong!Passw0rd -Q 'SELECT 1'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  
   zookeeper:
     image: confluentinc/cp-zookeeper:6.2.0
     container_name: zookeeper
@@ -69,6 +84,8 @@ services:
       PLUGIN_PATH: /kafka/connect
     ports:
       - "8083:8083"
+    volumes:
+      - ./drivers/mssql-jdbc-12.6.1.jre11.jar:/kafka/libs/mssql-jdbc.jar
     restart: unless-stopped
 
   kafka-ui:
@@ -104,3 +121,4 @@ services:
 
 volumes:
   pgdata:
+  sqlserverdata:
