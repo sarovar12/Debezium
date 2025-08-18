@@ -26,7 +26,7 @@ public class RandomCustomerGenerator(IServiceProvider serviceProvider) : Backgro
 
             Console.WriteLine($"Added customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
 
-            await Task.Delay(5000, stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
         }
     }
 
